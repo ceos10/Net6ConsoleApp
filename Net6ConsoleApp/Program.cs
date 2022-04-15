@@ -1,8 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-
-//1
+﻿//1
 var names = new[] { "Nick", "Mike", "John", "Leyla", "David", "Damian" };
 var chunked = names.Chunk(3);
 
