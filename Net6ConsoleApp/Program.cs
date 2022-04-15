@@ -1,4 +1,6 @@
-﻿//7 awesome improvements for LINQ in .NET 6
+﻿using System.Collections.Concurrent;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 //1
 var names = new[] { "Nick", "Mike", "John", "Leyla", "David", "Damian" };
@@ -48,7 +50,73 @@ TimeOnly time = TimeOnly.FromDateTime(dateTime);
 
 Console.WriteLine(time.ToString("O"));
 
-//Paralel.foreachasync
+//7
+var userHandlers = new[]
+{
+    "users/okyrylchuk",
+    "users/shanselman",
+    "users/jaredpar",
+    "users/davidfowl"
+};
+
+var users = new ConcurrentBag<GitHubUser>();
+
+using HttpClient client = new()
+{
+BaseAddress = new Uri("https://api.github.com"),
+};
+client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotNet", "6"));
+
+ParallelOptions parallelOptions = new()
+{
+MaxDegreeOfParallelism = 3
+};
+
+await Parallel.ForEachAsync(userHandlers, parallelOptions, async (uri, token) =>
+{
+var user = await client.GetFromJsonAsync<GitHubUser>(uri, token);
+users.Add(user);
+Console.WriteLine($"Name: {user.Name}\nBio: {user.Bio}\n");
+});
+
+
+//my test
+
+//ForEachAsync example
+var userTask = users.Select((user) => new Func<Task<int>>(() => UpdateUserAsync(user)));
+
+await Parallel.ForEachAsync(userTask, new ParallelOptions
+{
+MaxDegreeOfParallelism = -1
+}, async (updateUser, _) =>
+{
+await updateUser();
+});
+
+//WhenAll
+var anotherUserTask = users.Select(async (user) => await UpdateUserAsync(user));
+await Task.WhenAll(anotherUserTask);
+
+//ForEachAsync
+await Parallel.ForEachAsync(users, new ParallelOptions
+{
+MaxDegreeOfParallelism = -1
+}, async (user, _) =>
+{
+await UpdateUserAsync(user);
+});
+
+async Task<int> UpdateUserAsync(GitHubUser user)
+{
+Console.WriteLine("1");
+return await Task.FromResult(1);
+}
+
+public class GitHubUser
+{
+    public string Name { get; set; }
+    public string Bio { get; set; }
+}
 
 internal class FamilyMember
 {

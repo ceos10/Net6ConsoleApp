@@ -2,7 +2,7 @@
 Net 6 Console Application
 
 Topics:
-* Ne 6 new features
+* Net 6 new features
 
 Urls:
 * https://www.hanselman.com/blog/parallelforeachasync-in-net-6
