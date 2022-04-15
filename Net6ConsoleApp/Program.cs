@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-//7 awesome improvements for LINQ in .NET 6
+﻿//7 awesome improvements for LINQ in .NET 6
 
 //1
 var names = new[] { "Nick", "Mike", "John", "Leyla", "David", "Damian" };
@@ -42,6 +40,15 @@ var thirdItemFromTheEnd = names.ElementAt(^3);
 //var slice = names.Skip(2).Take(2);
 var slice = names.Take(2..4);
 var lastThree = names.Take(^3..);
+
+//6
+DateTime dateTime = DateTime.Parse("2020-01-06");
+DateOnly date = DateOnly.FromDateTime(dateTime);
+TimeOnly time = TimeOnly.FromDateTime(dateTime);
+
+Console.WriteLine(time.ToString("O"));
+
+//Paralel.foreachasync
 
 internal class FamilyMember
 {
